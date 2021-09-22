@@ -1,0 +1,186 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+<nav class="navbar navbar-expand-lg navbar-light bg-danger">
+  <a class="navbar-brand" href=""> <img src="">DBS Bank</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="customers.component.html">Customer Services <span class="sr-only">(current)</span></a>
+      </li>
+      
+    </ul>
+    
+  </div>
+</nav>
+<br>
+<br>
+<div class="container">
+<form #f="ngForm" (ngSubmit)="onSubmit(f)">
+  <div class="form-group row">
+    <label for="customerid" class="col-sm-2 ">Customer ID</label>
+    <div class="col-sm-10">
+      <input type="text"
+      class="form-control"
+      id="customerid"
+      ngModel
+      name="customerid" (keyup.enter)="onCustomerFormSubmit($event,f)"
+      placeholder="Enter Customer ID">
+      <p *ngIf="customerNotFound">User not found</p>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="accountholdername" class="col-sm-2 col-form-label">Account holder name</label>
+    <div class="col-sm-10">
+      <input type="text"
+      
+       class="form-control"
+       id="accountholdername"
+       value=""
+       ngModel
+       name="accountholdername" placeholder="Account Holder Name">
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label for="balance" class="col-sm-2 col-form-label">Balance</label>
+    <div class="col-sm-10">
+      <input type="text"
+      
+       class="form-control"
+       id="balance"
+       value=""
+       ngModel
+       name="balance" placeholder="Balance ">
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label for="receiverBIC" class="col-sm-2 col-form-label">Bank BIC</label>
+    <div class="col-sm-10">
+      <input type="text"
+      
+       class="form-control"
+       id="receiverBIC"
+       value=""
+       ngModel
+       name="receiverBIC" (keyup.enter)="onBankFormSubmit($event,f)" placeholder="Enter Bank BIC">
+       <p *ngIf="banknotFound">Bank Not Found</p>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label for="bankname" class="col-sm-2 col-form-label">Bank Name</label>
+    <div class="col-sm-10">
+      <input type="text"
+      
+       class="form-control"
+       id="bankname"
+       value=""
+       ngModel
+       name="bankname" placeholder="Bank name">
+    </div>
+  </div>
+  <div *ngIf="overdraftcheck" style="margin-left:220px;"  class="container">
+    <p *ngIf="overdraft"> overdraft  available</p>
+    <p *ngIf="!overdraft"> overdraft not available</p>
+   </div>
+
+   <label> Recipient Account Details</label>
+  <div class="form-group row">
+    <label for="receiveraccountholdernumber" class="col-sm-2 col-form-label">Recipient Account Number</label>
+    <div class="col-sm-10">
+      <input type="text"
+      
+       class="form-control"
+       id="receiveraccountholdernumber"
+       value=""
+       ngModel
+       name="receiveraccountholdernumber" placeholder="Enter Recipient Account Number">
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label for="receiveraccountholdername" class="col-sm-2 col-form-label">Recipient Account Name</label>
+    <div class="col-sm-10">
+      <input type="text"
+      
+       class="form-control"
+       id="receiveraccountholdername"
+       value=""
+       ngModel
+       name="receiveraccountholdername" placeholder="Enter Recipient Account Name">
+    </div>
+  </div>
+<br>
+ 
+  <div class="form-group">
+    <label  for="transfertypecode" col-sm-2>Transfer Type</label>
+    <select class="form-control" name="language"   id="transfertypecode"
+    ngModel
+    name="transfertypecode">
+    <option value="" default>Select Transfer Type</option>
+        <option value="B">Bank to Bank</option>
+        <option value="C">Customer to Customer</option>
+    </select>
+</div>
+<br>
+
+<div class="form-group">
+  <label  for="messagecode" col-sm-2>Message Code</label>
+  <select class="form-control" name="language"   id="bankcode"
+  ngModel
+  name="messagecode">
+  <option value="" default>Select Message Code</option>
+      <option *ngFor="let msg of messages"  value="{{msg}}">{{msg}}</option>
+  </select>
+</div>
+<br>
+<div class="form-group row">
+  <label for="inramount" class="col-sm-2 col-form-label">Amount</label>
+  <div class="col-sm-10">
+    <input type="number"
+    class="form-control"
+    id="inramount"
+    ngModel
+    name="inramount"
+    (keyup.enter)="calculateFees($event,f)" placeholder="Enter Amount">
+    <!-- <button style="margin-top: 10px;"
+    type="submit"
+    class="btn btn-primary mb-2"
+    >get details</button> -->
+  </div>
+</div>
+  <div class="form-group row">
+    <label for="transferfees" class="col-sm-2 col-form-label">Transfer fees</label>
+    <div class="col-sm-10 col-form-label">
+      <input type="text"
+      class="form-control"
+      readonly
+      id="transferfees"
+      [(ngModel)]="fees"
+      name="transferfees"
+      value="" placeholder="TransferFees">
+    </div>
+    </div>
+  <br>
+  <button style="margin-top: 10px;"
+      type="submit"
+      class="btn btn-primary mb-2"
+      [disabled]="!totalbalanceflag"
+      >Transfer</button>
+
+  <div class="container" *ngIf="transferstatus">
+    <p *ngIf="transferstatus">Payment Successful</p>
+    <p *ngIf="!transferstatus">Payment Not Successful</p>
+    </div>
+</form> 
+
+</div>
+
